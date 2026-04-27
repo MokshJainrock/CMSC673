@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Textbook Search</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="search-panel" aria-labelledby="app-title">
+        <div class="title-row">
+          <div>
+            <p class="course">CMSC 473/673 NLP</p>
+            <h1 id="app-title">Textbook Search</h1>
+          </div>
+          <div class="book-mark" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+
+        <form id="search-form" class="search-form">
+          <label for="query">Query</label>
+          <div class="query-row">
+            <input
+              id="query"
+              name="query"
+              type="search"
+              value="Krebs cycle acetyl CoA"
+              autocomplete="off"
+              required
+            />
+            <button type="submit">Search</button>
+          </div>
+
+          <div class="controls">
+            <label class="control">
+              Results
+              <input id="top-k" type="number" min="1" max="10" value="5" />
+            </label>
+            <label class="toggle">
+              <input id="use-openai" type="checkbox" />
+              <span>GPT-3.5 rerank</span>
+            </label>
+          </div>
+        </form>
+
+        <div class="examples" aria-label="Example queries">
+          <button type="button" data-query="Calvin cycle carbon dioxide rubisco">Calvin cycle</button>
+          <button type="button" data-query="DNA replication helicase primase Okazaki fragments">DNA replication</button>
+          <button type="button" data-query="limiting reactant percent yield stoichiometry">Stoichiometry</button>
+          <button type="button" data-query="net force mass acceleration Newton second law">Newton's law</button>
+        </div>
+      </section>
+
+      <section class="metrics" aria-label="Evaluation metrics">
+        <div>
+          <span>Precision@3</span>
+          <strong id="precision">0.500</strong>
+        </div>
+        <div>
+          <span>Recall@5</span>
+          <strong id="recall">0.875</strong>
+        </div>
+        <div>
+          <span>MRR</span>
+          <strong id="mrr">1.000</strong>
+        </div>
+        <div>
+          <span>NDCG@5</span>
+          <strong id="ndcg">0.978</strong>
+        </div>
+      </section>
+
+      <section class="results-section" aria-live="polite">
+        <div class="results-heading">
+          <h2>Results</h2>
+          <p id="mode-label">BM25</p>
+        </div>
+        <div id="status" class="status"></div>
+        <ol id="results" class="results"></ol>
+      </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

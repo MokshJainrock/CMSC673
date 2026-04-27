@@ -9,7 +9,7 @@ fontsize: 11pt
 
 # 1. Task and System Overview
 
-I selected Implementation Track part (a): the user types a topic or query, and the app finds relevant textbooks or textbook sections. The completed system is a command-line search engine for OpenStax-style textbook sections. A user can enter a query such as "Krebs cycle acetyl CoA" or "Calvin cycle carbon fixation," and the system returns ranked sections with titles, chapter metadata, snippets, and source URLs.
+I selected Implementation Track part (a): the user types a topic or query, and the app finds relevant textbooks or textbook sections. The completed system is a search engine for OpenStax-style textbook sections with both a command-line interface and a local browser frontend. A user can enter a query such as "Krebs cycle acetyl CoA," "Calvin cycle carbon fixation," or "mathematics is hard," and the system returns ranked sections with titles, chapter metadata, snippets, and source URLs.
 
 The system has two ranking modes. The first is a deterministic BM25 baseline implemented locally in Python. The second is a zero-shot GPT-3.5 comparison that sends the top BM25 candidates to the OpenAI API and asks the model to return a ranked list of section ids. This design keeps the main system reproducible while still satisfying the required comparison against a prompted GPT-3.5 model.
 
@@ -17,17 +17,17 @@ The system has two ranking modes. The first is a deterministic BM25 baseline imp
 
 The main retrieval method is Okapi BM25, a sparse lexical ranking method from the probabilistic relevance framework. BM25 is a good fit because textbook search queries often contain exact technical vocabulary, such as "ATP synthase," "Okazaki fragments," "Punnett square," or "Bronsted-Lowry." BM25 also requires no training data, which matters because the assignment does not provide relevance judgments.
 
-The original prototype depended on the `rank_bm25` package and NLTK tokenization. I replaced that with a compact local implementation in `textbook_search/bm25.py` and a deterministic regular-expression tokenizer in `textbook_search/tokenizer.py`. This makes the project easier to run in a clean checkout and avoids downloading NLTK tokenizer data. Each indexed document combines textbook name, chapter, section, title, and body summary so that both metadata and content can influence ranking.
+The original prototype depended on the `rank_bm25` package and NLTK tokenization. I replaced that with a compact local implementation in `textbook_search/bm25.py` and a deterministic regular-expression tokenizer in `textbook_search/tokenizer.py`. The tokenizer removes common stopwords such as "is" and "the," which prevents broad queries from matching irrelevant sections only because of common function words. Each indexed document combines textbook name, chapter, section, title, and body summary so that both metadata and content can influence ranking.
 
 The OpenAI comparison is implemented in `textbook_search/openai_compare.py`. It uses the Chat Completions API with `gpt-3.5-turbo` by default. The prompt asks the model to rank candidate textbook sections and return only comma-separated section ids. This makes the output easy to parse and evaluate with the same metrics as BM25.
 
 # 3. Data
 
-The corpus contains 24 textbook sections derived from OpenStax Biology 2e, OpenStax Chemistry 2e, and OpenStax College Physics. I chose OpenStax because it is openly licensed, available online, and covers common introductory science topics. Each record in `data/corpus.jsonl` includes an id, textbook, chapter, section, title, source URL, and concise searchable text.
+The corpus contains 27 textbook sections derived from OpenStax Biology 2e, OpenStax Chemistry 2e, OpenStax College Physics, OpenStax College Algebra 2e, and OpenStax Calculus Volume 1. I chose OpenStax because it is openly licensed, available online, and covers common introductory topics. Each record in `data/corpus.jsonl` includes an id, textbook, chapter, section, title, source URL, and concise searchable text.
 
 I used section-level summaries rather than raw PDF extraction. Raw textbook PDFs often mix body text with page headers, footers, captions, and tables; using curated section records keeps this project's retrieval behavior interpretable. The tradeoff is that the corpus is smaller than a production search system. The same JSONL schema can be extended to a much larger OpenStax scrape later.
 
-The evaluation set in `data/eval_queries.json` contains 12 manually labeled queries. Each query has one or more relevant section ids with graded relevance. For example, a query about the Calvin cycle gives the Calvin cycle section high relevance and the broader photosynthesis overview lower relevance.
+The evaluation set in `data/eval_queries.json` contains 14 manually labeled queries. Each query has one or more relevant section ids with graded relevance. For example, a query about the Calvin cycle gives the Calvin cycle section high relevance and the broader photosynthesis overview lower relevance.
 
 # 4. Implementation
 
@@ -40,7 +40,8 @@ The completed repository contains:
 - `textbook_search/search.py`, which exposes a reusable search engine API.
 - `textbook_search/openai_compare.py`, which runs the zero-shot GPT-3.5 reranker.
 - `textbook_search/evaluate.py`, which reports Precision@3, Recall@5, MRR, and NDCG@5.
-- `tests/`, which checks loading, tokenization, deterministic search, metric correctness, and API-output parsing.
+- `web_app.py` and `web/`, which provide a local browser frontend.
+- `tests/`, which checks loading, tokenization, deterministic search, metric correctness, API-output parsing, and the web search endpoint.
 
 The main search command is:
 
@@ -56,7 +57,7 @@ python3 main.py "Krebs cycle acetyl CoA" -k 5 --gpt-api --env-file /path/to/.env
 
 # 5. Evaluation
 
-I evaluated both BM25 and the GPT-3.5 reranker using the same 12 labeled queries. BM25 produced the candidate list. GPT-3.5 then reranked the top five candidates with a zero-shot prompt. I used four metrics:
+I evaluated both BM25 and the GPT-3.5 reranker using the same 14 labeled queries. BM25 produced the candidate list. GPT-3.5 then reranked the top five candidates with a zero-shot prompt. I used four metrics:
 
 - Precision@3: the fraction of top-three results that are relevant.
 - Recall@5: the fraction of relevant sections retrieved in the top five.
@@ -65,10 +66,10 @@ I evaluated both BM25 and the GPT-3.5 reranker using the same 12 labeled queries
 
 | System | Precision@3 | Recall@5 | MRR | NDCG@5 |
 | --- | ---: | ---: | ---: | ---: |
-| BM25 baseline | 0.500 | 0.875 | 1.000 | 0.978 |
-| Zero-shot GPT-3.5 reranker | 0.500 | 0.875 | 1.000 | 0.978 |
+| BM25 baseline | 0.726 | 0.857 | 1.000 | 0.975 |
+| Zero-shot GPT-3.5 reranker | 0.726 | 0.857 | 1.000 | 0.975 |
 
-The results show that BM25 is already strong on this small technical corpus. The first relevant section is almost always ranked first, which explains the perfect MRR. GPT-3.5 changed some lower-ranked ordering decisions, but it did not improve aggregate metrics because the candidate generator had already placed the most relevant result at the top. The lower Precision@3 shows that both systems still include weakly related sections in ranks two and three, especially when query terms overlap with generic words like "cycle," "ATP," or "polymerase."
+The results show that BM25 is already strong on this small technical corpus. The first relevant section is ranked first for every labeled query, which explains the perfect MRR. GPT-3.5 changed some lower-ranked ordering decisions, but it did not improve aggregate metrics because the candidate generator had already placed the most relevant result at the top. Precision@3 is lower than MRR because some queries have only one or two labeled relevant sections, so returning three results can include partially related candidates.
 
 # 6. Hurdles
 
@@ -76,11 +77,13 @@ The first hurdle was dependency fragility. The initial prototype required extern
 
 The second hurdle was data cleaning. Direct PDF extraction would have required removing headers, footers, captions, tables, and page numbers. I avoided that noise by using structured section records with source URLs. This made evaluation cleaner, but it limited corpus size.
 
-The third hurdle was fair GPT comparison. GPT-3.5 cannot reasonably receive a whole textbook corpus in one prompt, so I compared it as a reranker over the same top-five BM25 candidates. This makes the comparison reproducible and keeps the prompt small, but it means GPT-3.5 cannot recover a relevant section that BM25 failed to retrieve.
+The third hurdle was broad user phrasing. A query like "mathematics is hard" originally matched irrelevant biology sections because common words were scored. I addressed this with stopword filtering, zero-score filtering, and a small set of math sections.
+
+The final hurdle was fair GPT comparison. GPT-3.5 cannot reasonably receive a whole textbook corpus in one prompt, so I compared it as a reranker over the same top-five BM25 candidates. This makes the comparison reproducible and keeps the prompt small, but it means GPT-3.5 cannot recover a relevant section that BM25 failed to retrieve.
 
 # 7. Retrospective
 
-If I were extending this project, I would invest first in a larger automated OpenStax ingestion pipeline. Search quality depends heavily on corpus coverage, and 24 sections are enough for a prototype but not enough for a real textbook finder. I would also test title boosting, phrase matching, and a dense sentence-transformer reranker over the BM25 candidate pool. A larger evaluation set, ideally labeled by more than one person, would make the comparison more reliable.
+If I were extending this project, I would invest first in a larger automated OpenStax ingestion pipeline. Search quality depends heavily on corpus coverage, and 27 sections are enough for a prototype but not enough for a real textbook finder. I would also test title boosting, phrase matching, and a dense sentence-transformer reranker over the BM25 candidate pool. A larger evaluation set, ideally labeled by more than one person, would make the comparison more reliable.
 
 # 8. References
 
@@ -92,5 +95,8 @@ OpenStax. *Chemistry 2e*. Rice University. CC BY 4.0. https://openstax.org/detai
 
 OpenStax. *College Physics*. Rice University. CC BY 4.0. https://openstax.org/details/books/college-physics
 
-OpenAI. Chat Completions API documentation. https://platform.openai.com/docs/api-reference/chat
+OpenStax. *College Algebra 2e*. Rice University. CC BY 4.0. https://openstax.org/details/books/college-algebra-2e
 
+OpenStax. *Calculus Volume 1*. Rice University. CC BY 4.0. https://openstax.org/details/books/calculus-volume-1
+
+OpenAI. Chat Completions API documentation. https://platform.openai.com/docs/api-reference/chat

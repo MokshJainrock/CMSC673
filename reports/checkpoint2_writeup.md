@@ -23,7 +23,7 @@ The command-line app in `main.py` returns ranked results. The compatibility wrap
 
 # 3. Data
 
-The current corpus contains 24 textbook sections derived from OpenStax Biology 2e, OpenStax Chemistry 2e, and OpenStax College Physics. I chose OpenStax because it is openly licensed, available online, and covers common introductory science topics that are likely to appear in student textbook searches. Each record in `data/corpus.jsonl` has an id, textbook, chapter, section, title, source URL, and concise searchable text.
+The current corpus contains 27 textbook sections derived from OpenStax Biology 2e, OpenStax Chemistry 2e, OpenStax College Physics, OpenStax College Algebra 2e, and OpenStax Calculus Volume 1. I chose OpenStax because it is openly licensed, available online, and covers common introductory topics that are likely to appear in student textbook searches. Each record in `data/corpus.jsonl` has an id, textbook, chapter, section, title, source URL, and concise searchable text.
 
 For this checkpoint, I used short section summaries rather than raw PDF extraction. This avoids the header, footer, table, and figure-caption noise that often appears when textbook PDFs are converted directly to text. For the final version, the data pipeline should be expanded to automatically scrape or export a larger set of OpenStax sections while preserving the same JSONL format.
 
@@ -38,7 +38,8 @@ The repository now contains an end-to-end baseline:
 - `textbook_search/evaluate.py` reports Precision@3, Recall@5, MRR, and NDCG@5.
 - `textbook_search/gpt35_baseline.py` builds the zero-shot GPT-3.5 comparison prompt.
 - `textbook_search/openai_compare.py` calls the OpenAI API to run the zero-shot GPT-3.5 reranker when `OPENAI_API_KEY` is set.
-- `tests/` checks loading, tokenization, deterministic ranking, metric behavior, and evaluation data consistency.
+- `web_app.py` and `web/` provide a local browser frontend.
+- `tests/` checks loading, tokenization, deterministic ranking, metric behavior, web search behavior, and evaluation data consistency.
 
 The GitHub repository has at least three non-trivial commits. The current code builds on that history by turning the initial BM25 idea into a runnable project with tests and documented evaluation.
 
@@ -48,7 +49,7 @@ The first hurdle was dependency fragility. The initial version required `rank_bm
 
 The second hurdle was data extraction. Raw textbook PDFs can mix body text with headers, footers, captions, page numbers, and tables. Because noisy extraction would make the current evaluation hard to interpret, I used curated OpenStax section summaries as the first corpus format. The limitation is that the corpus is still small and manually prepared.
 
-The third hurdle was evaluation. There is no official relevance set, so I created a 12-query manual evaluation file. Each query maps to one or more relevant section ids with graded relevance. This is enough to test the system's behavior, although a larger final study should use more queries and ideally have a second person inspect the labels.
+The third hurdle was evaluation. There is no official relevance set, so I created a 14-query manual evaluation file. Each query maps to one or more relevant section ids with graded relevance. This is enough to test the system's behavior, although a larger final study should use more queries and ideally have a second person inspect the labels.
 
 # 6. Evaluation Plan and Current Results
 
@@ -59,14 +60,14 @@ The evaluation uses standard ranking metrics:
 - MRR rewards returning the first relevant result near rank one.
 - NDCG@5 uses graded relevance, so highly relevant documents matter more than weakly related ones.
 
-Current BM25 results on the 12-query evaluation set are:
+Current results on the 14-query evaluation set are:
 
 | System | Precision@3 | Recall@5 | MRR | NDCG@5 |
 | --- | ---: | ---: | ---: | ---: |
-| BM25 baseline | 0.500 | 0.875 | 1.000 | 0.978 |
-| Zero-shot GPT-3.5 reranker | 0.500 | 0.875 | 1.000 | 0.978 |
+| BM25 baseline | 0.726 | 0.857 | 1.000 | 0.975 |
+| Zero-shot GPT-3.5 reranker | 0.726 | 0.857 | 1.000 | 0.975 |
 
-The high MRR means the best relevant section is usually ranked first. Precision@3 is lower because BM25 sometimes gives partial credit to documents sharing generic terms such as "cycle" or "ATP." GPT-3.5 changed a few lower-ranked candidate orders, but it did not improve the aggregate metrics because the first relevant result was already usually ranked first by BM25. This suggests that the biggest future gain would come from expanding the corpus and improving candidate generation, not only reranking the current top five.
+The high MRR means the best relevant section is ranked first for every labeled query. Precision@3 is lower because some queries have only one or two labeled relevant sections, and both BM25 and GPT-3.5 sometimes include partially related lower-ranked candidates. GPT-3.5 changed a few lower-ranked candidate orders, but it did not improve the aggregate metrics because the first relevant result was already ranked first by BM25.
 
 The zero-shot GPT-3.5 comparison was run with `python3 -m textbook_search.evaluate --openai-rerank`. The model receives the BM25 candidate list and returns a ranked list of section ids. The code defaults to `gpt-3.5-turbo` to match the assignment wording, but the model can be changed with `OPENAI_MODEL` if that model is unavailable.
 
@@ -76,7 +77,9 @@ The test suite checks five important behaviors:
 
 - The corpus has at least 20 documents and every document includes an OpenStax source URL.
 - Tokenization is case-insensitive.
+- Common stopwords such as "is" are filtered from queries.
 - A direct Calvin cycle query returns the Calvin cycle section first.
+- A broad math query returns the algebra problem-solving section first.
 - Running the same query twice produces identical rankings and scores.
 - Evaluation queries only reference document ids that exist in the corpus.
 
@@ -96,3 +99,6 @@ OpenStax. *Chemistry 2e*. Rice University. CC BY 4.0. https://openstax.org/detai
 
 OpenStax. *College Physics*. Rice University. CC BY 4.0. https://openstax.org/details/books/college-physics
 
+OpenStax. *College Algebra 2e*. Rice University. CC BY 4.0. https://openstax.org/details/books/college-algebra-2e
+
+OpenStax. *Calculus Volume 1*. Rice University. CC BY 4.0. https://openstax.org/details/books/calculus-volume-1

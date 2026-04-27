@@ -34,7 +34,9 @@ class TextbookSearchEngine:
         scores = self._index.get_scores(query_tokens)
         ranked = sorted(enumerate(scores), key=lambda item: (-item[1], self.documents[item[0]].doc_id))
         results: list[SearchResult] = []
-        for doc_index, score in ranked[:k]:
+        for doc_index, score in ranked:
+            if score <= 0:
+                continue
             document = self.documents[doc_index]
             results.append(
                 SearchResult(
@@ -48,6 +50,8 @@ class TextbookSearchEngine:
                     snippet=_snippet(document.text),
                 )
             )
+            if len(results) >= k:
+                break
         return results
 
 

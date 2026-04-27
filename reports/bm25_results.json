@@ -2,11 +2,11 @@
   "summary": {
     "system": "bm25",
     "candidate_count": 5,
-    "queries": 12,
-    "precision_at_3": 0.5,
-    "recall_at_5": 0.875,
+    "queries": 14,
+    "precision_at_3": 0.7261904761904762,
+    "recall_at_5": 0.8571428571428571,
     "mrr": 1.0,
-    "ndcg_at_5": 0.9779000388371343
+    "ndcg_at_5": 0.9751514199113264
   },
   "per_query": [
     {
@@ -15,8 +15,8 @@
         "bio2e_08_03_calvin_cycle",
         "bio2e_08_01_photosynthesis_intro",
         "bio2e_07_03_pyruvate_oxidation",
-        "bio2e_10_04_cancer",
-        "bio2e_05_02_enzymes"
+        "bio2e_10_02_cell_cycle",
+        "bio2e_10_03_control_cell_cycle"
       ],
       "precision_at_3": 0.6666666666666666,
       "recall_at_5": 1.0,
@@ -82,13 +82,9 @@
     {
       "query": "homologous chromosomes crossing over independent assortment",
       "retrieved": [
-        "bio2e_11_01_meiosis",
-        "bio2e_05_01_energy_metabolism",
-        "bio2e_05_02_enzymes",
-        "bio2e_05_03_atp",
-        "bio2e_07_01_cellular_respiration"
+        "bio2e_11_01_meiosis"
       ],
-      "precision_at_3": 0.3333333333333333,
+      "precision_at_3": 1.0,
       "recall_at_5": 1.0,
       "mrr": 1.0,
       "ndcg_at_5": 1.0
@@ -111,12 +107,9 @@
       "query": "RNA polymerase promoters transcription termination",
       "retrieved": [
         "bio2e_15_02_transcription",
-        "bio2e_14_03_dna_replication",
-        "bio2e_05_01_energy_metabolism",
-        "bio2e_05_02_enzymes",
-        "bio2e_05_03_atp"
+        "bio2e_14_03_dna_replication"
       ],
-      "precision_at_3": 0.3333333333333333,
+      "precision_at_3": 0.5,
       "recall_at_5": 0.5,
       "mrr": 1.0,
       "ndcg_at_5": 0.9173194127129571
@@ -124,13 +117,9 @@
     {
       "query": "dominant recessive alleles Punnett square probability",
       "retrieved": [
-        "bio2e_12_01_mendel",
-        "bio2e_05_01_energy_metabolism",
-        "bio2e_05_02_enzymes",
-        "bio2e_05_03_atp",
-        "bio2e_07_01_cellular_respiration"
+        "bio2e_12_01_mendel"
       ],
-      "precision_at_3": 0.3333333333333333,
+      "precision_at_3": 1.0,
       "recall_at_5": 1.0,
       "mrr": 1.0,
       "ndcg_at_5": 1.0
@@ -139,12 +128,9 @@
       "query": "mole ratios limiting reactant percent yield",
       "retrieved": [
         "chem2e_07_03_reaction_stoichiometry",
-        "chem2e_07_01_moles",
-        "bio2e_05_01_energy_metabolism",
-        "bio2e_05_02_enzymes",
-        "bio2e_05_03_atp"
+        "chem2e_07_01_moles"
       ],
-      "precision_at_3": 0.6666666666666666,
+      "precision_at_3": 1.0,
       "recall_at_5": 1.0,
       "mrr": 1.0,
       "ndcg_at_5": 1.0
@@ -153,12 +139,9 @@
       "query": "weak acids conjugate bases Bronsted Lowry",
       "retrieved": [
         "chem2e_14_03_acids_bases",
-        "bio2e_15_01_genetic_code",
-        "bio2e_05_01_energy_metabolism",
-        "bio2e_05_02_enzymes",
-        "bio2e_05_03_atp"
+        "bio2e_15_01_genetic_code"
       ],
-      "precision_at_3": 0.3333333333333333,
+      "precision_at_3": 0.5,
       "recall_at_5": 1.0,
       "mrr": 1.0,
       "ndcg_at_5": 1.0
@@ -167,12 +150,29 @@
       "query": "net force mass acceleration F equals ma",
       "retrieved": [
         "phys_04_03_newton_second",
-        "chem2e_07_01_moles",
-        "bio2e_05_01_energy_metabolism",
-        "bio2e_05_02_enzymes",
-        "bio2e_05_03_atp"
+        "chem2e_07_01_moles"
       ],
-      "precision_at_3": 0.3333333333333333,
+      "precision_at_3": 0.5,
+      "recall_at_5": 1.0,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0
+    },
+    {
+      "query": "mathematics is hard",
+      "retrieved": [
+        "algebra_01_01_problem_solving"
+      ],
+      "precision_at_3": 1.0,
+      "recall_at_5": 0.5,
+      "mrr": 1.0,
+      "ndcg_at_5": 0.9173194127129571
+    },
+    {
+      "query": "derivatives tangent line instantaneous rate of change",
+      "retrieved": [
+        "calculus_03_01_derivatives"
+      ],
+      "precision_at_3": 1.0,
       "recall_at_5": 1.0,
       "mrr": 1.0,
       "ndcg_at_5": 1.0

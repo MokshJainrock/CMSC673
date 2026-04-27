@@ -38,6 +38,10 @@ def main() -> None:
         return
 
     print(f"Query: {args.query}\n")
+    if not results:
+        print("No strong textbook matches found. Try a more specific topic from the current corpus.")
+        return
+
     for rank, result in enumerate(results, start=1):
         print(f"{rank}. {result.doc_id} | {result.score:.3f} | {result.title}")
         print(f"   {result.textbook} - {result.chapter}, {result.section}")

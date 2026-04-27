@@ -2,7 +2,7 @@
 
 Implementation Track, part (a): the user types a topic or query, and the app finds relevant textbook sections.
 
-This repository contains a complete BM25-based retrieval baseline over a small OpenStax-derived textbook corpus. It includes a command-line search app, a reproducible evaluation set, ranking metrics, tests, and a zero-shot GPT-3.5 prompt template for the required comparison.
+This repository contains a complete BM25-based retrieval system over a small OpenStax-derived textbook corpus. It includes a command-line app, a browser frontend, a reproducible evaluation set, ranking metrics, tests, and a zero-shot GPT-3.5 API comparison.
 
 ## Project Structure
 
@@ -20,16 +20,40 @@ This repository contains a complete BM25-based retrieval baseline over a small O
 │   ├── search.py             # Search engine API
 │   └── tokenizer.py          # Deterministic tokenizer
 ├── tests/                    # Unit tests
+├── web/                      # Browser frontend assets
+├── scripts/run_full.py       # One-command project runner
 ├── main.py                   # Main CLI
+├── web_app.py                # Local web server and JSON API
 ├── bm25_baseline.py          # Compatibility wrapper for original baseline
 ├── data_loader.py            # Compatibility wrapper for original loader
 └── reports/
-    └── checkpoint2_writeup.md
+    ├── final_writeup.pdf
+    └── summary_of_changes.pdf
 ```
 
 ## Run Search
 
 No third-party packages are required.
+
+Run the full local workflow:
+
+```bash
+python3 scripts/run_full.py
+```
+
+Run the full workflow including live OpenAI API calls:
+
+```bash
+python3 scripts/run_full.py --with-openai
+```
+
+Run the browser frontend:
+
+```bash
+python3 web_app.py
+```
+
+Then open `http://127.0.0.1:8000`.
 
 ```bash
 python3 main.py "Krebs cycle acetyl CoA" -k 3
@@ -66,14 +90,14 @@ OPENAI_MODEL="gpt-4o-mini" python3 main.py "Krebs cycle acetyl CoA" --gpt-api
 python3 -m textbook_search.evaluate
 ```
 
-Current BM25 results on the 12-query evaluation set:
+Current BM25 results on the 14-query evaluation set:
 
 | Metric | Value |
 | --- | ---: |
-| Precision@3 | 0.500 |
-| Recall@5 | 0.875 |
+| Precision@3 | 0.726 |
+| Recall@5 | 0.857 |
 | MRR | 1.000 |
-| NDCG@5 | 0.978 |
+| NDCG@5 | 0.975 |
 
 To evaluate the OpenAI reranker on all labeled queries:
 
@@ -92,8 +116,8 @@ Completed comparison results are saved in `reports/bm25_results.json` and `repor
 
 | System | Precision@3 | Recall@5 | MRR | NDCG@5 |
 | --- | ---: | ---: | ---: | ---: |
-| BM25 baseline | 0.500 | 0.875 | 1.000 | 0.978 |
-| Zero-shot GPT-3.5 reranker | 0.500 | 0.875 | 1.000 | 0.978 |
+| BM25 baseline | 0.726 | 0.857 | 1.000 | 0.975 |
+| Zero-shot GPT-3.5 reranker | 0.726 | 0.857 | 1.000 | 0.975 |
 
 ## Test
 
@@ -108,5 +132,7 @@ The corpus contains concise section summaries and metadata derived from OpenStax
 - OpenStax Biology 2e, CC BY 4.0
 - OpenStax Chemistry 2e, CC BY 4.0
 - OpenStax College Physics, CC BY 4.0
+- OpenStax College Algebra 2e, CC BY 4.0
+- OpenStax Calculus Volume 1, CC BY 4.0
 
 Each document in `data/corpus.jsonl` includes the source URL for its textbook section.

@@ -79,5 +79,18 @@
     "relevance": {
       "phys_04_03_newton_second": 3
     }
+  },
+  {
+    "query": "mathematics is hard",
+    "relevance": {
+      "algebra_01_01_problem_solving": 3,
+      "algebra_03_01_functions": 1
+    }
+  },
+  {
+    "query": "derivatives tangent line instantaneous rate of change",
+    "relevance": {
+      "calculus_03_01_derivatives": 3
+    }
   }
 ]
