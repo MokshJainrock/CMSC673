@@ -1,11 +1,3 @@
-"""Prompt template for the required zero-shot GPT-3.5 comparison.
-
-The course writeup asks for a comparison to zero-shot prompted GPT-3.5.  This
-module produces the exact prompt used for that comparison without requiring an
-API key during local tests.  Run the BM25 search first, paste the candidates
-into this prompt, and record GPT-3.5's ranked order in the results table.
-"""
-
 from __future__ import annotations
 
 from .search import SearchResult
