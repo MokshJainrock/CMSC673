@@ -1,0 +1,83 @@
+[
+  {
+    "query": "how does the Calvin cycle fix carbon dioxide",
+    "relevance": {
+      "bio2e_08_03_calvin_cycle": 3,
+      "bio2e_08_01_photosynthesis_intro": 1
+    }
+  },
+  {
+    "query": "electron transport chain proton gradient ATP synthase",
+    "relevance": {
+      "bio2e_07_04_oxidative_phosphorylation": 3,
+      "bio2e_08_02_light_reactions": 1
+    }
+  },
+  {
+    "query": "glycolysis splits glucose into pyruvate",
+    "relevance": {
+      "bio2e_07_02_glycolysis": 3,
+      "bio2e_07_01_cellular_respiration": 1
+    }
+  },
+  {
+    "query": "Krebs cycle acetyl CoA carbon dioxide NADH",
+    "relevance": {
+      "bio2e_07_03_pyruvate_oxidation": 3,
+      "bio2e_07_01_cellular_respiration": 1
+    }
+  },
+  {
+    "query": "cell cycle checkpoints cyclins cancer",
+    "relevance": {
+      "bio2e_10_03_control_cell_cycle": 3,
+      "bio2e_10_04_cancer": 2,
+      "bio2e_10_02_cell_cycle": 1
+    }
+  },
+  {
+    "query": "homologous chromosomes crossing over independent assortment",
+    "relevance": {
+      "bio2e_11_01_meiosis": 3
+    }
+  },
+  {
+    "query": "helicase primase DNA polymerase Okazaki fragments",
+    "relevance": {
+      "bio2e_14_03_dna_replication": 3,
+      "bio2e_14_01_dna_structure": 1
+    }
+  },
+  {
+    "query": "RNA polymerase promoters transcription termination",
+    "relevance": {
+      "bio2e_15_02_transcription": 3,
+      "bio2e_15_01_genetic_code": 1
+    }
+  },
+  {
+    "query": "dominant recessive alleles Punnett square probability",
+    "relevance": {
+      "bio2e_12_01_mendel": 3
+    }
+  },
+  {
+    "query": "mole ratios limiting reactant percent yield",
+    "relevance": {
+      "chem2e_07_03_reaction_stoichiometry": 3,
+      "chem2e_07_01_moles": 1
+    }
+  },
+  {
+    "query": "weak acids conjugate bases Bronsted Lowry",
+    "relevance": {
+      "chem2e_14_03_acids_bases": 3
+    }
+  },
+  {
+    "query": "net force mass acceleration F equals ma",
+    "relevance": {
+      "phys_04_03_newton_second": 3
+    }
+  }
+]
