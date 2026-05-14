@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<head><title>Textbook Search</title></head>
+<body>
+
+<h2>Textbook Search</h2>
+
+<form method="get" action="/">
+  <input type="text" name="q" value="{{ query }}" placeholder="type a topic">
+  <input type="checkbox" name="rerank" value="on" {% if use_rerank %}checked{% endif %}> rerank
+  <button type="submit">Search</button>
+</form>
+
+{% if no_match and query %}<p>No relevant sections found.</p>{% endif %}
+
+{% for r in results %}
+  <p>
+    <b>{{ r.title }}</b><br>
+    <small>{{ r.source }} - {{ r.chapter }} - score {{ r.score }}</small><br>
+    {{ r.preview }}
+  </p>
+{% endfor %}
+
+</body>
+</html>
